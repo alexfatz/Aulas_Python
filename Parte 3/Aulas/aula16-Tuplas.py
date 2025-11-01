@@ -1,0 +1,1 @@
+# tuplas = () # não são mutáveis

@@ -1,0 +1,5 @@
+times = ('Brasil', 'São Paulo', 'Argentina', 'Portugal', 'Palmeiras', 'Real Madrid', 'Barcelona', 'Espanha', 'Holando', 'Corinthians')
+print(f'Os cinco primeiro colocados:\n{times[:5]}')
+print(f'Os últimos 4 colocados da tabela:\n{times[-4:]}')
+print(f'Times em ordem alfabética:\n{sorted(times)}')
+print(f'O Real Madrid se encontra na posição: {times.index('Real Madrid')}')
