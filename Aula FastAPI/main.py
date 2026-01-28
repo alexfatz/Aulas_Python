@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI
 from dotenv import load_dotenv
-from passlib.context import CryptContext
+from passlib.context import CryptContext # problemas com senhas mt grandes, max 72bits (não resolvido)
 from os import getenv
 
 load_dotenv()

@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException, Depends
+from fastapi.security import OAuth2PasswordRequestForm
 from dependencies import criar_sessao, verificar_token
 from models import Usuario
 from main import bcrypt_context, algorithm, secret_key, expire_minutes
-from schemas import UsuarioSchema, LoginSchema, OAuth2PasswordRequestForm
+from schemas import UsuarioSchema, LoginSchema
 from sqlalchemy.orm import Session
 from jose import jwt
 from datetime import datetime, timezone, timedelta
@@ -20,11 +21,10 @@ def gerar_token(usuario_id: int, expire_time = timedelta(minutes=expire_minutes)
 def autenticar_usuario(email: str, senha: str, sessao: Session):
     usuario = sessao.query(Usuario).filter(Usuario.email == email).first()
 
-    if not usuario or not bcrypt_context.verify(senha, usuario.senha):
+    if not usuario or not senha == usuario.senha:
         return None
 
     return usuario
-
 
 
 @auth_router.get("/")
@@ -41,8 +41,7 @@ async def criar_conta(usuario: UsuarioSchema, sessao: Session = Depends(criar_se
     if registro:
         raise HTTPException(status_code=400, detail="Email já cadastrado.")
     
-    senha_bcrypt = bcrypt_context.hash(usuario.senha)
-    novo_usuario = Usuario(usuario.nome, usuario.email, senha_bcrypt, usuario.admin)
+    novo_usuario = Usuario(usuario.nome, usuario.email, usuario.senha, usuario.admin)
 
     sessao.add(novo_usuario)
     sessao.commit()
