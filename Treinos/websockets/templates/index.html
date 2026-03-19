@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treino Websocket</title>
+</head>
+<body>
+    <header>
+        <h1>Treino Websocket</h1>
+    </header>
+    <main>
+        <ul id="messages" style="list-style-type: none;"></ul>
+        <form id="message-form">
+            <input type="text" id="message-input">
+            <button type="submit">Enviar</button>
+        </form>
+    </main>
+    <script src="{{ url_for('static', path='js/script.js') }}"></script>
+</body>
+</html>
