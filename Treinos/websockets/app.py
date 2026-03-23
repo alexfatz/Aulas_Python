@@ -7,28 +7,36 @@ from asyncio import Lock
 
 class ConnectionsManager:
     def __init__(self):
-        self.connections: list[WebSocket] = []
+        self.connections: set[WebSocket] = set()
         self.lock = Lock()
 
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         async with self.lock:
-            self.connections.append(websocket)
+            self.connections.add(websocket)
 
 
     async def disconnect(self, websocket: WebSocket):
         async with self.lock:
             if websocket in self.connections:
-                self.connections.remove(websocket)
+                self.connections.discard(websocket)
 
 
     async def broadcast(self, data: dict):
         async with self.lock:
             connections: list[WebSocket] = list(self.connections)
 
+        connections_problematicas = []
+
         for connection in connections:
-            await connection.send_json(data)
+            try:
+                await connection.send_json(data)
+            except:
+                connections_problematicas.append(connection)
+
+        for connection in connections_problematicas:
+            await app.state.connections_manager.disconnect(connection)
 
 
 templates = Jinja2Templates(directory="templates")
@@ -56,4 +64,6 @@ async def websocket_endpoint(websocket: WebSocket):
             await app.state.connections_manager.broadcast(data)
 
     except WebSocketDisconnect:
+        await app.state.connections_manager.disconnect(websocket)
+    finally:
         await app.state.connections_manager.disconnect(websocket)
